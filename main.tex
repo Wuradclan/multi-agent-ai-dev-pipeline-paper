@@ -1,0 +1,99 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{enumitem}
+
+% --- Hyperref Setup ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={Toward a Self-Healing Multi-Agent Software Engineering Pipeline},
+    pdfauthor={Morad Ait Abdellah}
+}
+
+% --- Title and Author Information ---
+\title{\textbf{Toward a Self-Healing Multi-Agent Software Engineering Pipeline with Verification, Testing, and Persistent Memory}}
+
+\author{
+  Morad Ait Abdellah \\
+  Université de Sherbrooke \\
+  Sherbrooke, Canada \\
+  \texttt{morad.aitabdellah@mail.mcgill.ca} \\
+  \url{https://www.wurad.net} \\
+  \url{https://github.com/Wuradclan}
+}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+% --- Abstract ---
+\begin{abstract}
+Current AI-assisted software development workflows predominantly rely on single-agent models responsible for simultaneous planning, documentation verification, implementation, and state retention. This monolithic approach frequently results in context collapse, hallucinated API integrations, and broken development loops. In this position paper, we propose a 6-stage multi-agent architecture that enforces strict segregation of duties across specialized models. By distributing responsibilities across architectural planning, real-time external verification, local code execution, deterministic quality validation, and persistent memory ingestion, the proposed pipeline mitigates single-agent bottlenecks. Furthermore, we outline an empirical evaluation roadmap to benchmark context window efficiency, execution latency, and the critical risk of long-term memory contamination in automated software engineering.
+\end{abstract}
+
+% --- 1. Introduction ---
+\section{Introduction}
+As large language models (LLMs) are increasingly integrated into software engineering workflows, the limitations of single-agent architectures have become apparent. Developers routinely expect a single conversational agent to understand project architecture, retrieve current external documentation, execute complex code modifications, and remember historical project decisions.
+
+This overloading leads to predictable failure modes. When planning, execution, and testing occur within a single context window, errors generated in one phase silently contaminate subsequent outputs. To address these vulnerabilities, we propose a transition toward an autonomous, role-segmented engineering team, mirroring the segregation of duties found in traditional software development lifecycles.
+
+% --- 2. Proposed Architecture ---
+\section{The 6-Stage Multi-Agent Architecture}
+The proposed framework decouples the software generation process into six explicit stages, utilizing distinct models optimized for specific tasks. 
+
+\begin{figure}[ht]
+    \centering
+    % Ensure the image file 'architecture-loop.png' is uploaded to the same folder as this .tex file.
+    \includegraphics[width=0.9\textwidth]{architecture-loop.png}
+    \caption{The 6-Stage Self-Healing Multi-Agent Development Loop}
+    \label{fig:architecture}
+\end{figure}
+
+\subsection{Stage 1: The Architect (Plan)}
+A high-reasoning model (e.g., Gemini) handles brainstorming, system design, and task decomposition. Instead of generating raw code, this layer explores the problem space and outputs a structured JSON blueprint to govern the subsequent stages.
+
+\subsection{Stage 2: The Researcher (Verify)}
+To mitigate the hallucination of deprecated APIs, a search-grounded model (e.g., Perplexity) validates the latest package dependencies and external documentation prior to code generation. This ensures the implementation relies on current, factual syntax.
+
+\subsection{Stage 3: The Engineer (Build)}
+The execution layer (e.g., Claude Code) receives the verified blueprint. Leveraging a large local context window and file-system access, this agent modifies the repository and generates the concrete implementation.
+
+\subsection{Stage 4: The Validator (Test)}
+An isolated Quality Assurance (QA) agent operates within a controlled testing environment. Rather than relying on probabilistic evaluations, this stage utilizes deterministic tools (e.g., \texttt{pytest}) to execute unit tests. Correctness functions as a strict quality gate rather than a secondary consideration.
+
+\subsection{Stage 5: The Memory Layer (Commit)}
+Upon successfully passing the validation gate, the accepted code changes, underlying rationale, and critical architectural decisions are extracted and appended to a persistent, long-term memory vector database (e.g., NotebookLM).
+
+\subsection{Stage 6: Grounded Continuation (Loop)}
+To close the loop, future sessions initiate by querying the persistent memory layer. Subsequent planning stages are grounded in the actual implemented state of the project, preventing context loss across sessions.
+
+% --- 3. Evaluation Roadmap ---
+\section{Proposed Evaluation Methodology}
+The primary risk in autonomous, long-running agent workflows is \textit{Memory Contamination}---the phenomenon wherein a flawed summary bypasses the QA gate, entering the persistent memory layer and misaligning all future generations. 
+
+To empirically validate this architecture, future work will benchmark this 6-stage pipeline against standard single-agent baselines inside an isolated \texttt{pytest-benchmark} environment. We propose tracking the following core metrics:
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Quality Gates \& Pass Rates:} The frequency at which the isolated QA agent successfully detects and blocks broken implementations before memory ingestion.
+    \item \textbf{The Memory Contamination Rate:} The incidence of false positives resulting in poisoned long-term context.
+    \item \textbf{Context Window Efficiency:} Token overhead and KV-cache utilization scaling across the multi-agent handoffs.
+    \item \textbf{Task Completion Latency:} The 95th percentile (P95) end-to-end execution time, accounting for internal self-correction loops.
+\end{itemize}
+
+% --- 4. Conclusion ---
+\section{Conclusion}
+Treating AI-assisted software development as a monolithic task leads to compounding contextual errors. By enforcing a strict segregation of duties---planning, verification, execution, validation, and memory management---we can construct resilient, self-healing pipelines. The proposed 6-stage architecture provides a foundational roadmap for deploying reliable, state-aware multi-agent systems in complex engineering environments.
+
+\end{document}
